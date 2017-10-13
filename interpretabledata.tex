@@ -20,8 +20,11 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{amsmath}
 
-\title{Provenance and Pseudo-Provenance for Test-based Test Generation}
+\DeclareMathOperator{\Update}{update}
+
+\title{Provenance and Pseudo-Provenance for Seeded Automated Test Generation}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -33,11 +36,16 @@
 % on the second line, try using \AND instead of \And before the third
 % author name.
 
-\author{Josie Holmes\\
-Pennsylvania State University 
-\And
+\author{
 Alex Groce\\
-Northern Arizona University}
+School of Informatics, Computing, and Cyber Systems\\
+Northern Arizona University\\
+Flagstaff, AZ 86011
+\And
+Josie Holmes\\
+Pennsylvania State University 
+}
+
 
 %\author{
  % David S.~Hippocampus\thanks{Use footnote for providing further
@@ -76,11 +84,76 @@ Northern Arizona University}
 \maketitle
 
 \begin{abstract}
-  Many methods of automated test generation, including some that explicitly use machine learning (and some that use ML more broadly conceived) derive new tests from existing tests.
-  Two kinds of provenance:  from sources and back after reduction normalization.
+  Many methods for automated test generation, including some that
+  explicitly use machine learning (and some that use ML more broadly
+  conceived) derive new tests from existing tests (often referred to
+  as seeds).  Often, the seed tests
+  from which new tests are derived are manually constructed, or at least
+  simpler than the tests that are produced as the final outputs of
+  such test generators.  We
+  propose to annotate generated tests with a provenance trail showing
+  how individual generated tests of interest (especially failing tests) derive
+  from seed tests, and how the population of generated tests relates
+  to the original seed tests.  In some cases, post-processing of
+  generated tests can invalidate provenance information, in which case
+  we also propose a method for attempting to construct
+  ``pseudo-provenance'' describing how the tests \emph{could} have
+  been (partly) generated from seeds.
 \end{abstract}
 
-\section{Submission of papers to NIPS 2017}
+\section{Seeded Automated Test Generation}
+
+Automatic generation of software tests, including (security) fuzzing
+\cite{aflfuzz,TrailBitsSeeded}, random testing \cite{csmith,ICSEDiff,Pacheco},
+search-based/evolutionary testing \cite{FA11},
+and symbolic or concolic execution
+\cite{Whitebox,GodefroidKS05,KLEE,Person:2011:DIS:1993498.1993558,Marinescu:2012:MTS:2337223.2337308,issta14}
+is essential for improving software security and reliability.  Many of
+these techniques rely on some form of learning, sometimes directly
+using standard algorithms, and sometimes in a more broadly conceived
+way.  In fact, using Mitchell's classic definition of machine learning
+as concerning any computer program that improves its performance at some
+task through experience \cite{Mitchell}, almost all non-trivial automated test generation
+algorithms are machine-learning systems, with the following
+approximate description:
+
+\begin{enumerate}
+\item Based on results of running all past tests ($T$), produce a new test
+  $t' = f(T)$ to execute.
+\item Execute $t'$ and collect data $d'$ on code coverage, fault detection and other
+  information of interest.
+\item $T = \Update(T,t',d')$
+\item Go to step 1.
+\end{enumerate}
+
+The performance (in Mitchell's sense) is usually defined as the
+collective code coverage or fault detection of tests in $T$,
+or may be defined over only a subset of the tests (those deemed most
+useful, output as a test suite).  The function $f$ varies widely: $f$
+may represent random
+testing with probabilities of actions determined by past executions
+\cite{AndrewsL07}, a genetic-algorithms approach where tests in $T$
+are mutated and/or combined with each other, based on their individual
+performances \cite{McMinn04search-basedsoftware,FA11,aflfuzz}, or an
+approach using symbolic execution to discover new tests satisfying
+certain constraints on the execution path
+\cite{Whitebox,GodefroidKS05,KLEE}.  A common feature however, is that
+many methods do not begin with the ``blank slate'' of an empty $T$.
+Instead, they take as an initial input a population of tests that are
+thought to be high-quality, and proceed to generate new tests from
+these \emph{seed} tests
+\cite{aflfuzz,Person:2011:DIS:1993498.1993558,Marinescu:2012:MTS:2337223.2337308,issta14,STVR_seeding}.
+Seed tests are usually manually generated, or tests selected from a
+previously generated suite for their high coverage or fault detection
+\cite{YooHarman,stvrcausereduce}.  It is generally the case that seed
+tests are more easily understood by users than newly generated tests.
+
+For example, consider the extremely popular and successful American Fuzzy Lop tool
+for security fuzzing \cite{aflfuzz}.  It usually begins fuzzing
+(trying to generate inputs that cause crashes indicating potential
+security vulnerabilities) from a corpus of ``good'' inputs to a program.
+
+
 
 We used TSTL \cite{tstlsttt}.
 
