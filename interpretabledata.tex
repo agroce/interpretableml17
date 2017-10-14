@@ -91,7 +91,7 @@ Pennsylvania State University
   from which new tests are derived are manually constructed, or at least
   simpler than the tests that are produced as the final outputs of
   such test generators.  We
-  propose to annotate generated tests with a provenance trail showing
+  propose annotation of generated tests with a provenance trail showing
   how individual generated tests of interest (especially failing tests) derive
   from seed tests, and how the population of generated tests relates
   to the original seed tests.  In some cases, post-processing of
@@ -127,31 +127,43 @@ approximate description:
 \end{enumerate}
 
 The performance (in Mitchell's sense) is usually defined as the
-collective code coverage or fault detection of tests in $T$,
-or may be defined over only a subset of the tests (those deemed most
-useful, output as a test suite).  The function $f$ varies widely: $f$
-may represent random
-testing with probabilities of actions determined by past executions
-\cite{AndrewsL07}, a genetic-algorithms approach where tests in $T$
-are mutated and/or combined with each other, based on their individual
-performances \cite{McMinn04search-basedsoftware,FA11,aflfuzz}, or an
-approach using symbolic execution to discover new tests satisfying
-certain constraints on the execution path
-\cite{Whitebox,GodefroidKS05,KLEE}.  A common feature however, is that
-many methods do not begin with the ``blank slate'' of an empty $T$.
-Instead, they take as an initial input a population of tests that are
-thought to be high-quality, and proceed to generate new tests from
-these \emph{seed} tests
+collective code coverage or fault detection of tests in $T$, or may be
+defined over only a subset of the tests (those deemed most useful,
+output as a test suite).  The function $f$ varies widely: $f$ may
+represent random testing with probabilities of actions determined by
+past executions \cite{AndrewsL07}, a genetic-algorithms approach where
+tests in $T$ are mutated and/or combined with each other, based on
+their individual performances
+\cite{McMinn04search-basedsoftware,FA11,aflfuzz}, or an approach using
+symbolic execution to discover new tests satisfying certain
+constraints on the execution path \cite{Whitebox,GodefroidKS05,KLEE}.
+A common feature however, is that many methods do not begin with the
+``blank slate'' of an empty $T$.  Instead, they take as an initial
+input a population of tests that are thought to be high-quality (and,
+most importantly, to provide some guidance as to the structure of
+valid tests), and proceed to generate new tests from these \emph{seed}
+tests
 \cite{aflfuzz,Person:2011:DIS:1993498.1993558,Marinescu:2012:MTS:2337223.2337308,issta14,STVR_seeding}.
 Seed tests are usually manually generated, or tests selected from a
 previously generated suite for their high coverage or fault detection
 \cite{YooHarman,stvrcausereduce}.  It is generally the case that seed
 tests are more easily understood by users than newly generated tests.
 
-For example, consider the extremely popular and successful American Fuzzy Lop tool
+For example, consider the extremely popular and successful American
+Fuzzy Lop (AFL) tool
 for security fuzzing \cite{aflfuzz}.  It usually begins fuzzing
 (trying to generate inputs that cause crashes indicating potential
-security vulnerabilities) from a corpus of ``good'' inputs to a program.
+security vulnerabilities) from a corpus of ``good'' inputs to a
+program.  When a corpus input is mutated and the result is
+``interesting,'' by a code-coverage based heuristic, the new input is
+added to the corpus of tests to use in creating future tests.  Many
+tools, considered at a high level, operate in the same fashion, with the
+critical differences arising from engineering aspects (how tests are executed
+and instrumented), varied heuristics for selecting tests to mutate,
+and choice of mutation methods.  AFL records the origin of each test
+in its queue in test filenames, which suffices in AFL's case because
+each test produced is the result of a change to a single, pre-existing
+test, in most cases, or the merger of two tests, in rarer cases.
 
 
 
