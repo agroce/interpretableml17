@@ -165,6 +165,27 @@ in its queue in test filenames, which suffices in AFL's case because
 each test produced is the result of a change to a single, pre-existing
 test, in most cases, or the merger of two tests, in rarer cases.
 
+This simple approach works for cases where the provenance is the
+result of simple mutation.  However, a more complex approach is
+required when the influence of seeds is probabilistic, or a test is
+composed of (partial) fragments of many tests.  Moreover, AFL provides
+no tools to guide users in making use of what amounts to an internal
+book-keeping mechanism, rather than an output designed for human
+examination.
+
+Moreover, tests, once generated, are frequently manipulated in ways
+that may make provenance information no longer valid:  a test produced
+from two seed tests (or seed test-derived tests) may be reduced
+\cite{DD} so that one of the tests no longer is present at all, for example.
+
+In this paper, we propose to go beyond the kind of simple mechanisms
+found in AFL, and
+offer the following contributions:
+
+\begin{itemize}
+\item An implementation of provenance for an algorithm that involves
+  probabilistic 
+
 
 
 We used TSTL \cite{tstlsttt}.
