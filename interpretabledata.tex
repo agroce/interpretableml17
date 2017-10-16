@@ -91,7 +91,7 @@ Pennsylvania State University
   from which new tests are derived are manually constructed, or at least
   simpler than the tests that are produced as the final outputs of
   such test generators.  We
-  propose annotation of generated tests with a provenance trail showing
+  propose annotation of generated tests with a \emph{provenance} (trail) showing
   how individual generated tests of interest (especially failing tests) derive
   from seed tests, and how the population of generated tests relates
   to the original seed tests.  In some cases, post-processing of
@@ -121,12 +121,12 @@ approximate description:
 \item Based on results of running all past tests ($T$), produce a new test
   $t' = f(T)$ to execute.
 \item Execute $t'$ and collect data $d'$ on code coverage, fault detection and other
-  information of interest.
+  information of interest for the execution of $t'$.
 \item $T = \Update(T,t',d')$
 \item Go to step 1.
 \end{enumerate}
 
-The performance (in Mitchell's sense) is usually defined as the
+Performance here (in Mitchell's sense) is usually measured by
 collective code coverage or fault detection of tests in $T$, or may be
 defined over only a subset of the tests (those deemed most useful,
 output as a test suite).  The function $f$ varies widely: $f$ may
@@ -165,15 +165,14 @@ in its queue in test filenames, which suffices in AFL's case because
 each test produced is the result of a change to a single, pre-existing
 test, in most cases, or the merger of two tests, in rarer cases.
 
-This simple approach works for cases where the provenance is the
-result of simple mutation.  However, a more complex approach is
+This simple approach works for cases where the provenance of a test is
+always mediated by mutation, making for clear, simple ``audit trail.''  However, a more complex approach is
 required when the influence of seeds is probabilistic, or a test is
 composed of (partial) fragments of many tests.  Moreover, AFL provides
 no tools to guide users in making use of what amounts to an internal
 book-keeping mechanism, rather than an output designed for human
 examination.
-
-Moreover, tests, once generated, are frequently manipulated in ways
+Finally, tests, once generated, are frequently manipulated in ways
 that may make provenance information no longer valid:  a test produced
 from two seed tests (or seed test-derived tests) may be reduced
 \cite{DD} so that one of the tests no longer is present at all, for example.
@@ -183,301 +182,41 @@ found in AFL, and
 offer the following contributions:
 
 \begin{itemize}
-\item An implementation of provenance for an algorithm that involves
-  probabilistic 
-
-
-
-We used TSTL \cite{tstlsttt}.
-
-NIPS requires electronic submissions.  The electronic submission site
-is
-\begin{center}
-  \url{https://cmt.research.microsoft.com/NIPS2017/}
-\end{center}
-
-Please read carefully the instructions below and follow them
-faithfully.
-
-\subsection{Style}
-
-Papers to be submitted to NIPS 2017 must be prepared according to the
-instructions presented here. Papers may only be up to eight pages
-long, including figures. This does not include acknowledgments and 
-cited references which are allowed on subsequent pages.
-Papers that exceed these limits will not be reviewed, or in any
-other way considered for presentation at the conference.
-
-The margins in 2017 are the same as since 2007, which allow for
-$\sim$$15\%$ more words in the paper compared to earlier years.
-
-Authors are required to use the NIPS \LaTeX{} style files obtainable
-at the NIPS website as indicated below. Please make sure you use the
-current files and not previous versions. Tweaking the style files may
-be grounds for rejection.
-
-\subsection{Retrieval of style files}
-
-The style files for NIPS and other conference information are
-available on the World Wide Web at
-\begin{center}
-  \url{http://www.nips.cc/}
-\end{center}
-The file \verb+nips_2017.pdf+ contains these instructions and
-illustrates the various formatting requirements your NIPS paper must
-satisfy.
-
-The only supported style file for NIPS 2017 is \verb+nips_2017.sty+,
-rewritten for \LaTeXe{}.  \textbf{Previous style files for \LaTeX{}
-  2.09, Microsoft Word, and RTF are no longer supported!}
-
-The new \LaTeX{} style file contains two optional arguments:
-\verb+final+, which creates a camera-ready copy, and \verb+nonatbib+,
-which will not load the \verb+natbib+ package for you in case of
-package clash.
-
-At submission time, please omit the \verb+final+ option. This will
-anonymize your submission and add line numbers to aid review.  Please
-do \emph{not} refer to these line numbers in your paper as they will
-be removed during generation of camera-ready copies.
-
-The file \verb+nips_2017.tex+ may be used as a ``shell'' for writing
-your paper. All you have to do is replace the author, title, abstract,
-and text of the paper with your own.
-
-The formatting instructions contained in these style files are
-summarized in Sections \ref{gen_inst}, \ref{headings}, and
-\ref{others} below.
-
-\section{General formatting instructions}
-\label{gen_inst}
-
-The text must be confined within a rectangle 5.5~inches (33~picas)
-wide and 9~inches (54~picas) long. The left margin is 1.5~inch
-(9~picas).  Use 10~point type with a vertical spacing (leading) of
-11~points.  Times New Roman is the preferred typeface throughout, and
-will be selected for you by default.  Paragraphs are separated by
-\nicefrac{1}{2}~line space (5.5 points), with no indentation.
-
-The paper title should be 17~point, initial caps/lower case, bold,
-centered between two horizontal rules. The top rule should be 4~points
-thick and the bottom rule should be 1~point thick. Allow
-\nicefrac{1}{4}~inch space above and below the title to rules. All
-pages should start at 1~inch (6~picas) from the top of the page.
-
-For the final version, authors' names are set in boldface, and each
-name is centered above the corresponding address. The lead author's
-name is to be listed first (left-most), and the co-authors' names (if
-different address) are set to follow. If there is only one co-author,
-list both author and co-author side by side.
-
-Please pay special attention to the instructions in Section \ref{others}
-regarding figures, tables, acknowledgments, and references.
-
-\section{Headings: first level}
-\label{headings}
-
-All headings should be lower case (except for first word and proper
-nouns), flush left, and bold.
-
-First-level headings should be in 12-point type.
-
-\subsection{Headings: second level}
-
-Second-level headings should be in 10-point type.
-
-\subsubsection{Headings: third level}
-
-Third-level headings should be in 10-point type.
-
-\paragraph{Paragraphs}
-
-There is also a \verb+\paragraph+ command available, which sets the
-heading in bold, flush left, and inline with the text, with the
-heading followed by 1\,em of space.
-
-\section{Citations, figures, tables, references}
-\label{others}
-
-These instructions apply to everyone.
-
-\subsection{Citations within the text}
-
-The \verb+natbib+ package will be loaded for you by default.
-Citations may be author/year or numeric, as long as you maintain
-internal consistency.  As to the format of the references themselves,
-any style is acceptable as long as it is used consistently.
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations
-appropriate for use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
-If you wish to load the \verb+natbib+ package with options, you may
-add the following before loading the \verb+nips_2017+ package:
-\begin{verbatim}
-   \PassOptionsToPackage{options}{natbib}
-\end{verbatim}
-
-If \verb+natbib+ clashes with another package you load, you can add
-the optional argument \verb+nonatbib+ when loading the style file:
-\begin{verbatim}
-   \usepackage[nonatbib]{nips_2017}
-\end{verbatim}
-
-As submission is double blind, refer to your own published work in the
-third person. That is, use ``In the previous work of Jones et
-al.\ [4],'' not ``In our previous work [4].'' If you cite your other
-papers that are not widely available (e.g., a journal paper under
-review), use anonymous author names in the citation, e.g., an author
-of the form ``A.\ Anonymous.''
-
-\subsection{Footnotes}
-
-Footnotes should be used sparingly.  If you do require a footnote,
-indicate footnotes with a number\footnote{Sample of the first
-  footnote.} in the text. Place the footnotes at the bottom of the
-page on which they appear.  Precede the footnote with a horizontal
-rule of 2~inches (12~picas).
-
-Note that footnotes are properly typeset \emph{after} punctuation
-marks.\footnote{As in this example.}
-
-\subsection{Figures}
-
-All artwork must be neat, clean, and legible. Lines should be dark
-enough for purposes of reproduction. The figure number and caption
-always appear after the figure. Place one line space before the figure
-caption and one line space after the figure. The figure caption should
-be lower case (except for first word and proper nouns); figures are
-numbered consecutively.
-
-You may use color figures.  However, it is best for the figure
-captions and the paper body to be legible if the paper is printed in
-either black/white or in color.
-\begin{figure}[h]
-  \centering
-  \fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
-\end{figure}
-
-\subsection{Tables}
-
-All tables must be centered, neat, clean and legible.  The table
-number and title always appear before the table.  See
-Table~\ref{sample-table}.
-
-Place one line space before the table title, one line space after the
-table title, and one line space after the table. The table title must
-be lower case (except for first word and proper nouns); tables are
-numbered consecutively.
-
-Note that publication-quality tables \emph{do not contain vertical
-  rules.} We strongly suggest the use of the \verb+booktabs+ package,
-which allows for typesetting high-quality, professional tables:
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-This package was used to typeset Table~\ref{sample-table}.
-
-\begin{table}[t]
-  \caption{Sample table title}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule{1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\section{Final instructions}
-
-Do not change any aspects of the formatting parameters in the style
-files.  In particular, do not modify the width or length of the
-rectangle the text should fit into, and do not change font sizes
-(except perhaps in the \textbf{References} section; see below). Please
-note that pages should be numbered.
-
-\section{Preparing PDF files}
-
-Please prepare submission files with paper size ``US Letter,'' and
-not, for example, ``A4.''
-
-Fonts were the main cause of problems in the past years. Your PDF file
-must only contain Type 1 or Embedded TrueType fonts. Here are a few
-instructions to achieve this.
-
-\begin{itemize}
-
-\item You should directly generate PDF files using \verb+pdflatex+.
-
-\item You can check which fonts a PDF files uses.  In Acrobat Reader,
-  select the menu Files$>$Document Properties$>$Fonts and select Show
-  All Fonts. You can also use the program \verb+pdffonts+ which comes
-  with \verb+xpdf+ and is available out-of-the-box on most Linux
-  machines.
-
-\item The IEEE has recommendations for generating PDF files whose
-  fonts are also acceptable for NIPS. Please see
-  \url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
-
-\item \verb+xfig+ "patterned" shapes are implemented with bitmap
-  fonts.  Use "solid" shapes instead.
-
-\item The \verb+\bbold+ package almost always uses bitmap fonts.  You
-  should use the equivalent AMS Fonts:
-\begin{verbatim}
-   \usepackage{amsfonts}
-\end{verbatim}
-followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or
-\verb+\mathbb{C}+ for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You
-can also use the following workaround for reals, natural and complex:
-\begin{verbatim}
-   \newcommand{\RR}{I\!\!R} %real numbers
-   \newcommand{\Nat}{I\!\!N} %natural numbers
-   \newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
-Note that \verb+amsfonts+ is automatically loaded by the
-\verb+amssymb+ package.
-
+\item We present an implementation of provenance for an algorithm that involves
+  generating new tests from partial sequences from many seed tests.
+\item We discuss ways to present information about not just the
+  provenance of a single test, but the impact on future tests of
+  initial seed tests.  While single-test provenance is useful for
+  developers debugging, information on general impact of seeds is more
+  important for design and analysis of test generation configuration
+  and algorithms.
+\item We identify test manipulations that partially or completely
+  destroy/invalidate provenance information, and propose an algorithm
+  for producing a \emph{pseudo-provenance}, showing how the tests generated
+  \emph{could} have been generated from seeds, even if they were not actually
+  thus generated, and discuss abstractions that allow the
+  creation of such a psuedo-provenances in more cases.
 \end{itemize}
 
-If your file contains type 3 fonts or non embedded TrueType fonts, we
-will ask you to fix it.
+\section{A Simple Seeded Generation Algorithm with Provenance}
 
-\subsection{Margins in \LaTeX{}}
+We implemented a novel test generation technique for the TSTL
+\cite{tstlsttt,nfm15,issta15} test generation language and tool for
+Python.  In this approach, the seed tests are split into short
+sub-sequences of length $k$.  In place of the usual algorithm for
+random testing, where a new test action is randomly chosen at each
+step during testing, our approach always attempts to follow some
+sub-sequence, in a best-effort fashion (if the next step in the
+current sub-sequence is not enabled, it is skipped).  When a test
+generated in this fashion covers new code (the usual metric for
+deciding to learn from a test), it too is broken into sub-sequences
+and they are added to the sub-sequence pool.
 
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+ from the \verb+graphicx+ package. Always
-specify the figure width as a multiple of the line width as in the
-example below:
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]{myfile.pdf}
-\end{verbatim}
-See Section 4.4 in the graphics bundle documentation
-(\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
+\section{Presenting Collective Provenance Information}
 
-A number of width problems arise when \LaTeX{} cannot properly
-hyphenate a line. Please give LaTeX hyphenation hints using the
-\verb+\-+ command when necessary.
+\section{Test Manipulations and Pseudo-Provenance}
+
+\subsection{A Greedy Pseudo-Provenance Algorithm}
 
 \subsubsection*{Acknowledgments}
 
@@ -485,7 +224,7 @@ Use unnumbered third level headings for the acknowledgments. All
 acknowledgments go at the end of the paper. Do not include
 acknowledgments in the anonymized submission, only in the final paper.
 
-\section*{References}
+%\section*{References}
 
 \bibliographystyle{plain}
 \bibliography{intml}
