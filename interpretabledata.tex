@@ -25,7 +25,7 @@
 
 \DeclareMathOperator{\Update}{update}
 
-\title{Provenance and Pseudo-Provenance for Seeded Automated Test Generation}
+\title{Provenance and Pseudo-Provenance for Seeded Learning-Based Automated Test Generation}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -85,7 +85,7 @@ Pennsylvania State University
 \maketitle
 
 \begin{abstract}
-  Many methods for automated test generation, including some that
+  Many methods for automated software test generation, including some that
   explicitly use machine learning (and some that use ML more broadly
   conceived) derive new tests from existing tests (often referred to
   as seeds).  Often, the seed tests
@@ -111,7 +111,9 @@ and symbolic or concolic execution
 \cite{Whitebox,GodefroidKS05,KLEE,Person:2011:DIS:1993498.1993558,Marinescu:2012:MTS:2337223.2337308,issta14}
 is essential for improving software security and reliability.  Many of
 these techniques rely on some form of learning, sometimes directly
-using standard algorithms \cite{last2004artificial,Raffelt:2007:DTV:1787497.1787516,ARTChen,Groce:2002:AMC:646486.694482}, and sometimes in a more broadly conceived
+using standard algorithms
+\cite{last2004artificial,Raffelt:2007:DTV:1787497.1787516,ARTChen,Groce:2002:AMC:646486.694482}
+such as reinforcement learning \cite{ISSRE,ISOLA12,ReinforceBook}, and sometimes in a more broadly conceived
 way.  In fact, using Mitchell's classic definition of machine learning
 as concerning any computer program that improves its performance at some
 task through experience \cite{Mitchell}, almost all non-trivial automated test generation
