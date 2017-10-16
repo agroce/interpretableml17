@@ -21,6 +21,7 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{amsmath}
+\usepackage{code}
 
 \DeclareMathOperator{\Update}{update}
 
@@ -110,7 +111,7 @@ and symbolic or concolic execution
 \cite{Whitebox,GodefroidKS05,KLEE,Person:2011:DIS:1993498.1993558,Marinescu:2012:MTS:2337223.2337308,issta14}
 is essential for improving software security and reliability.  Many of
 these techniques rely on some form of learning, sometimes directly
-using standard algorithms, and sometimes in a more broadly conceived
+using standard algorithms \cite{last2004artificial,Raffelt:2007:DTV:1787497.1787516,ARTChen,Groce:2002:AMC:646486.694482}, and sometimes in a more broadly conceived
 way.  In fact, using Mitchell's classic definition of machine learning
 as concerning any computer program that improves its performance at some
 task through experience \cite{Mitchell}, almost all non-trivial automated test generation
@@ -148,13 +149,17 @@ Seed tests are usually manually generated, or tests selected from a
 previously generated suite for their high coverage or fault detection
 \cite{YooHarman,stvrcausereduce}.  It is generally the case that seed
 tests are more easily understood by users than newly generated tests.
+For example, seed tests often include only valid inputs and
+``reasonable'' sequences of test actions, while generated tests, to
+improve coverage and fault detection, often include invalid inputs or
+bizarre method call sequences.
 
 For example, consider the extremely popular and successful American
 Fuzzy Lop (AFL) tool
 for security fuzzing \cite{aflfuzz}.  It usually begins fuzzing
 (trying to generate inputs that cause crashes indicating potential
 security vulnerabilities) from a corpus of ``good'' inputs to a
-program.  When a corpus input is mutated and the result is
+program, e.g., actual audio or graphics files.  When a corpus input is mutated and the result is
 ``interesting,'' by a code-coverage based heuristic, the new input is
 added to the corpus of tests to use in creating future tests.  Many
 tools, considered at a high level, operate in the same fashion, with the
@@ -208,28 +213,112 @@ offer the following contributions:
 \section{A Simple Seeded Generation Algorithm with Provenance}
 
 We implemented a novel test generation technique for the TSTL
-\cite{tstlsttt,nfm15,issta15} test generation language and tool for
-Python.  In this approach, the seed tests are split into short
+\cite{tstlsttt,nfm15,issta15,tstl} test generation language and tool for
+Python.  In this approach, the seed tests are split into (usually short)
 sub-sequences of length $k$.  In place of the usual algorithm for
 random testing, where a new test action is randomly chosen at each
 step during testing, our approach always attempts to follow some
 sub-sequence, in a best-effort fashion (if the next step in the
 current sub-sequence is not enabled, it is skipped).  When a test
 generated in this fashion covers new code (the usual metric for
-deciding to learn from a test), it too is broken into sub-sequences
-and they are added to the sub-sequence pool.
+deciding when to learn from a test, in such methods), it too is broken into sub-sequences
+and the sequences are added to the sub-sequence pool and used in generation of
+future tests.
+
+In TSTL, a test is a sequence of components (test actions), and the
+provenance of a test generated using this algorithm involves numerous
+tests, and varying parts of those tests.  We extended TSTL to allow
+every component of a test to be annotated with a string.  Whenever an
+component from a sequence in the sequence pool is added to a test, it
+is labeled with the file name of the source test and the exact
+location in that test of the component.  Figure \ref{fig:example}
+shows part of a high-quality test for an AVL data structure library.  In the
+example, we first generated a set of ``quick tests''
+\cite{icst2014,stvrcausereduce}, small tests that together obtain
+maximum coverage.  We then used sequences from these tests to guide
+testing, with the goal of producing a single test with maximal code
+coverage (the highest coverage from any one quick test is 173 branches
+and 131 statements).  The complete generated test of which the first fragment
+is shown in Figure \ref{fig:example}
+covers 204 branches and 152 statements.  Each step (component) in the
+test is labeled with its exact source in one of the 6 seed tests.
+Because all tests generated (including new quick tests enhancing
+coverage) are thus annotated, the source of a test component can always be
+traced back to an initial seed test.  Here, the file names of the
+tests are not highly informative; however, using a recently-proposed
+technique for automatically giving generated tests high-quality names
+\cite{Daka:2017:GUT:3092703.3092727}, the information could be even
+more useful.  In practice, many seed tests would also be named for
+previously detected faults they are associated with, thus providing
+considerable information as to the context of test components.
+
+\begin{figure}
+{\scriptsize
+\begin{code}
+int1 = 13                   \# STEP 0   ;;; quick1.test:11
+int0 = 7                    \# STEP 1   ;;; quick1.test:14
+int2 = 16                   \# STEP 2   ;;; quick2.test:4
+avl1 = avl.AVLTree()        \# STEP 3   ;;; quick5.test:3
+avl1.insert(int2)           \# STEP 4   ;;; quick0.test:15
+avl1.insert(int1)           \# STEP 5   ;;; quick0.test:16
+avl0 = avl.AVLTree()        \# STEP 6   ;;; quick3.test:1
+int1 = 10                   \# STEP 7   ;;; quick3.test:2
+avl0.insert(int0)           \# STEP 8   ;;; quick3.test:3
+avl0.insert(int1)           \# STEP 9   ;;; quick3.test:4
+avl0.delete(int0)           \# STEP 10  ;;; quick3.test:5
+avl1.insert(int2)           \# STEP 11  ;;; quick5.test:10
+int2 = 14                   \# STEP 12  ;;; quick5.test:11
+\end{code}
+}
+\caption{Example test generated with fine-grained provenance information}
+\label{fig:example}
+\end{figure}
+
+In this example algorithm, provenance is certain and direct:  each component of a
+test arises from one previously-generated or seed test.  However, in
+some cases (e.g., learned models) multiple tests may influence the
+\emph{probability} of a component appearing.  For example, the
+probability of each possible component could be proportional to how
+many seed (and learned) tests that component appears in.  In such cases,
+however, the same approach applies, except that instead of a single
+source, each component is labeled with a set of contributing tests,
+along with their degree of contribution (e.g., if a component appears
+5 times in some seed tests, it will increase probability of generating
+that component more than a seed test in which it only appears once).
 
 \section{Presenting Collective Provenance Information}
 
+While provenance of components of a single test is the most
+interesting information for debugging and understanding a newly
+generated test, the most difficult and frequently performed part of an
+automated testing effort is the effort to understand the overall
+behavior of the test generation.  For that task, information beyond
+the provenance of single tests is essential.
+
 \section{Test Manipulations and Pseudo-Provenance}
+
+The approaches presented above are applicable to a large set of test
+generation methods.  However, tests generated are often manipulated
+after generation.  In particular, they are very often \emph{reduced}
+in size \cite{DD}, producing a test with fewer components that
+preserves either fault detection or code coverage \cite{icst2014}
+properties of the original test.  Reduction usually preserves
+provenance in a sense (components not removed maintain their
+provenance annotations), but a long sequence, as in our example
+algorithm, may no longer exist.  Understanding the provenance after
+reduction is likely harder, because there are fewer long sequences
+from existing tests.  Moreover, test \emph{normalization} \cite{Groce:2017:OTR:3092703.3092704}, which uses
+term rewriting to change (vs. simply remove) test components tends to
+destroy provenance information completely (any components rewritten
+during normalization
+lose their provenance, since the new component is produced by a brute
+force search, not from seed tests).
 
 \subsection{A Greedy Pseudo-Provenance Algorithm}
 
-\subsubsection*{Acknowledgments}
+\section{Conclusions}
 
-Use unnumbered third level headings for the acknowledgments. All
-acknowledgments go at the end of the paper. Do not include
-acknowledgments in the anonymized submission, only in the final paper.
+%\subsubsection*{Acknowledgments}
 
 %\section*{References}
 
