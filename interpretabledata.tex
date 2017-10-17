@@ -347,7 +347,7 @@ would have provided, by showing how an algorithm based on replaying
 sub-sequences of seed tests \emph{could} have produced the new tests.
 This applies to both a simple sub-sequence-replay approach such as
 described above, or to more complex approaches, such as a Markov model
-of the seed tests that tends to generate imitative sub-sequences.
+of the seed tests.
 
 \subsection{A Greedy Pseudo-Provenance Algorithm}
 
@@ -368,8 +368,8 @@ set of compatible components from seeds becomes empty, the current
 sub-sequence cannot be extended, so we return to the previous step,
 and construct a pseudo-provenance by iterating backwards from that
 position until we encounter test components already labeled with a
-provenance, annotating each step with an arbitrarily selected
-provenance (since all are guaranteed to produce an equally sized
+provenance, annotating each step with the same arbitrarily selected
+provenance source from possible sequences in seeds (since all are guaranteed to produce an equally sized
 sub-sequence).
 
 The problem is similar to computing a string alignment (e.g., as in
