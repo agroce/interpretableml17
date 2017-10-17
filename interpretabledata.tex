@@ -183,11 +183,12 @@ understood explanation of a learning result for humans, in those cases
 novel, interesting objects from existing objects.
 
 This simple approach used in AFL works for cases where the provenance of a test is
-always mediated by mutation, making for clear, simple ``audit trail.''  However, a more complex approach is
+always mediated by mutation, making for a clear, simple ``audit
+trail.''  However, a more complex or fine-grained approach is
 required when the influence of seeds is probabilistic, or a test is
 composed of (partial) fragments of many tests.  Moreover, AFL provides
 no tools to guide users in making use of what amounts to an internal
-book-keeping mechanism, rather than an output designed for human
+book-keeping mechanism, and does not produce provenance output designed for human
 examination.
 Finally, tests, once generated, are frequently manipulated in ways
 that may make provenance information no longer valid:  a test produced
@@ -283,7 +284,7 @@ In this example algorithm, provenance is certain and direct:  each component of 
 test arises from one previously-generated or seed test.  However, in
 some cases (e.g., learned models) multiple tests may influence the
 \emph{probability} of a component appearing.  For example, the
-probability of each possible component could be proportional to how
+probability of each possible component could be non-linearly proportional to how
 many seed (and learned) tests that component appears in.  In such cases,
 however, the same approach applies, except that instead of a single
 source, each component is labeled with a set of contributing tests,
@@ -332,9 +333,9 @@ in size \cite{DD}, producing a test with fewer components that
 preserves either fault detection or code coverage \cite{icst2014}
 properties of the original test.  Reduction usually preserves
 provenance in a sense (components not removed maintain their
-provenance annotations), but a long sequence, as in our example
-algorithm, may no longer exist.  Understanding the provenance after
-reduction is likely harder, because there are fewer long sequences
+provenance annotations), but a long sequence is likely to be broken up
+and have its context lost.  Understanding the provenance after
+reduction is therefore likely harder, because there are fewer long sequences
 from existing tests.  Moreover, test \emph{normalization} \cite{Groce:2017:OTR:3092703.3092704}, which uses
 term rewriting to change (vs. simply remove) test components tends to
 destroy provenance information completely (any components rewritten
@@ -378,7 +379,7 @@ multiple strings to potentially align with.  While in principle a more
 expensive algorithm than our greedy approach could produce better
 pseudo-provenances, we believe that making initial sub-sequences as
 long as possible, in order to ``orientate'' readers is more
-importance, and the exact quality is not critical for summarization
+important in debugging, and the exact quality is not critical for summarization
 purposes.
 
 Using our greedy approach, we can construct the provenance of the test
@@ -387,9 +388,10 @@ several cases we find a better matching sequence than was really
 responsible for the generated test.  For example, {\tt STEP 3} now is
 associated with {\tt quick0.test:14} rather than {\tt quick5.test:3}.
 This is also an actual way the test could have been produced by our
-algorithm, and in many case would make understanding the relationship
-to a seed test easier:  pseudo-provenance may be useful even in cases
-where real provenance exists, since for our algorithm, at least (or a
+sequence-based generation
+algorithm, and in many cases would make understanding the relationship
+to a seed test easier.  Pseudo-provenance may be useful even in cases
+where real provenance exists, since for our generation algorithm, at least (or a
 Markov-based approach), a pseudo-provenance is equally valid in the
 sense that it provides a causal explanation of the generated test.
 The pseudo-provenance may relate to a less likely sequence of events,
@@ -401,9 +403,9 @@ generation-method probability.
 \section{Conclusions}
 
 In this paper, we present the problem of explaining the origins of
-generated tests derived from seed tests, and propose approaches for
-handling this problem in practical testing, implemented in the TSTL
-test generation tool.  One unusual feature of automated test
+generated tests derived from seed tests, and propose and implement (in TSTL
+\cite{tstl}, code available on GitHub) approaches for
+handling this problem in practical testing.  One unusual feature of automated test
 generation is that even when provenance is lost in either generation
 or post-processing of tests, constructing a pseudo-provenance is still
 useful in understanding the context of generated tests, and how they
