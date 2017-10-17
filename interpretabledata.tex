@@ -140,6 +140,9 @@ their individual performances
 \cite{McMinn04search-basedsoftware,FA11,aflfuzz}, or an approach using
 symbolic execution to discover new tests satisfying certain
 constraints on the execution path \cite{Whitebox,GodefroidKS05,KLEE}.
+A similar framework uses reinforcement learning, but constructs each
+test on-the-fly and performs $\Update$ calls after every step of
+testing \cite{ISSRE}.
 A common feature however, is that many methods do not begin with the
 ``blank slate'' of an empty $T$.  Instead, they take as an initial
 input a population of tests that are thought to be high-quality (and,
@@ -230,7 +233,7 @@ future tests.
 In TSTL, a test is a sequence of components (test actions), and the
 provenance of a test generated using this algorithm involves numerous
 tests, and varying parts of those tests.  We extended TSTL to allow
-every component of a test to be annotated with a string.  Whenever an
+every component of a test to be annotated with a string.  Whenever a
 component from a sequence in the sequence pool is added to a test, it
 is labeled with the file name of the source test and the exact
 location in that test of the component.  Figure \ref{fig:example}
