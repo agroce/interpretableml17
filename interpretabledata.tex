@@ -212,7 +212,7 @@ offer the following contributions:
   for producing a \emph{pseudo-provenance}, showing how the tests generated
   \emph{could} have been generated from seeds, even if they were not actually
   thus generated, and discuss abstractions that allow the
-  creation of such a psuedo-provenances in more cases.
+  creation of such a pseudo-provenance in more cases.
 \end{itemize}
 
 \section{A Simple Seeded Generation Algorithm with Provenance}
@@ -384,7 +384,19 @@ purposes.
 Using our greedy approach, we can construct the provenance of the test
 in Figure \ref{fig:example} exactly, with the exception that in
 several cases we find a better matching sequence than was really
-responsible for the generated test.
+responsible for the generated test.  For example, {\tt STEP 3} now is
+associated with {\tt quick0.test:14} rather than {\tt quick5.test:3}.
+This is also an actual way the test could have been produced by our
+algorithm, and in many case would make understanding the relationship
+to a seed test easier:  pseudo-provenance may be useful even in cases
+where real provenance exists, since for our algorithm, at least (or a
+Markov-based approach), a pseudo-provenance is equally valid in the
+sense that it provides a causal explanation of the generated test.
+The pseudo-provenance may relate to a less likely sequence of events,
+but it may also relate to a more likely sequence of events.  In many
+cases, the ability to understand generated tests by having extended
+sub-sequences of seed tests is more important than such questions of
+generation-method probability.
 
 \section{Conclusions}
 
