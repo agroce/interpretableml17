@@ -296,9 +296,32 @@ that component more than a seed test in which it only appears once).
 While provenance of components of a single test is the most
 interesting information for debugging and understanding a newly
 generated test, the most difficult and frequently performed part of an
-automated testing effort is the effort to understand the overall
-behavior of the test generation.  For that task, information beyond
+automated testing effort is the \emph{effort to understand the overall
+behavior of the test generation}.  For that task, information beyond
 the provenance of single tests is essential.
+
+Fortunately, the critical information is easily summarized.  Usually
+simply tabulating frequency of a seed test contributing to a generated
+test is sufficient, either at the level of the entire test or, for an
+algorithm like the one presented above, at the level of individual
+components of a seed test.  For example, if we apply our new algorithm
+to test {\tt pyfakefs} \cite{pyfakefs}, a popular Python file system
+simulator for testing, we discover that a test that first creates,
+then removes, a sequence of nested directories is the single most
+useful test to mine for new coverage, out of a set of 50 seed tests
+covering basic file system functionalities.  However, more useful
+perhaps is an analysis of actual components used, abstracted to their
+general type of operation (what file system call is involved).  This
+shows that, in order, the most important operations for exposing new
+coverage are:  {\tt symlink}, {\tt makedirs}, {\tt rename}, and {\tt
+  close}, followed by variations of {\tt open}.  The file-level data
+combined with this data shows that our seeds provide very few
+variations on the creation and destruction of multiple directories at
+once, making the one test with such a sequence extremely important,
+despite these not being the most contributory components for adding
+test coverage.  At this point, adding more seeds with the
+``over-used'' components is a plausible next step for improving test
+generation.
 
 \section{Test Manipulations and Pseudo-Provenance}
 
@@ -319,9 +342,60 @@ during normalization
 lose their provenance, since the new component is produced by a brute
 force search, not from seed tests).
 
+However, we can still provide some of the information that provenance
+would have provided, by showing how an algorithm based on replaying
+sub-sequences of seed tests \emph{could} have produced the new tests.
+This applies to both a simple sub-sequence-replay approach such as
+described above, or to more complex approaches, such as a Markov model
+of the seed tests that tends to generate imitative sub-sequences.
+
 \subsection{A Greedy Pseudo-Provenance Algorithm}
 
+The algorithm for constructing a pseudo-provenance is simple.  We take
+the set of seed tests, and a test for which no provenance exists (or
+for which provenance has been partially destroyed).  First, for each
+component of the test missing provenance, we compute all possible
+positions in all seed tests compatible with that component.  Normally,
+this will be matching components only, but we also allow optional abstraction
+(as with provenance summaries) to the \emph{type} of test action,
+rather than the specific action (since normalization and alpha
+conversion tend to modify exact variable names from source tests).
+For components that already have provenance, the set of compatible
+seed components is just the actual provenance source.   After this, we
+iterate through the test, at each step removing any compatible
+provenances that do not extend a previous sub-sequence.  Whenever the
+set of compatible components from seeds becomes empty, the current
+sub-sequence cannot be extended, so we return to the previous step,
+and construct a pseudo-provenance by iterating backwards from that
+position until we encounter test components already labeled with a
+provenance, annotating each step with an arbitrarily selected
+provenance (since all are guaranteed to produce an equally sized
+sub-sequence).
+
+The problem is similar to computing a string alignment (e.g., as in
+computing Levenshtein distances \cite{lev}), except that there are
+multiple strings to potentially align with.  While in principle a more
+expensive algorithm than our greedy approach could produce better
+pseudo-provenances, we believe that making initial sub-sequences as
+long as possible, in order to ``orientate'' readers is more
+importance, and the exact quality is not critical for summarization
+purposes.
+
+Using our greedy approach, we can construct the provenance of the test
+in Figure \ref{fig:example} exactly, with the exception that in
+several cases we find a better matching sequence than was really
+responsible for the generated test.
+
 \section{Conclusions}
+
+In this paper, we present the problem of explaining the origins of
+generated tests derived from seed tests, and propose approaches for
+handling this problem in practical testing, implemented in the TSTL
+test generation tool.  One unusual feature of automated test
+generation is that even when provenance is lost in either generation
+or post-processing of tests, constructing a pseudo-provenance is still
+useful in understanding the context of generated tests, and how they
+relate to seed tests.
 
 %\subsubsection*{Acknowledgments}
 
